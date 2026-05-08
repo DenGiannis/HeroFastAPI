@@ -12,6 +12,10 @@ class Settings(BaseSettings):
         extra="ignore"
     )
 
+    access_token_expire_minutes: int = 30
+    jwt_secret_key: str = "supersecretkey"
+    jwt_algorithm: str = "HS256"
+
 @lru_cache
 def get_settings() -> Settings:
     """Get cached app settings (singleton)."""
