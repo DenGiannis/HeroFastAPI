@@ -1,22 +1,17 @@
-# Authentication routes and logic
-# POST /auth/register (Public) - Register a new user
-# POST /auth/login (Public) - Login and return access token and token type
-# GET /auth/me (Authenticated) - Get current user info (username and is_admin)
-
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 from fastapi import status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
 
-from app.security import hash_password, verify_password, create_access_token
-from app.models import User
-from app.dependencies import SessionDependency, get_current_user
-from app.models.user_schema import UserCreateRequest, UserResponse
+from security import hash_password, verify_password, create_access_token
+from models import User
+from dependencies import SessionDependency, get_current_user
+from models.user_schema import UserCreateRequest, UserRegisterResponse, UserResponse
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-@router.post("/register", status_code=201)
+@router.post("/register", status_code=201, response_model=UserRegisterResponse)
 def register(request: UserCreateRequest, session: SessionDependency):
     """Register a new user."""
     user = session.exec(select(User).where(User.username == request.username)).first()
@@ -28,7 +23,7 @@ def register(request: UserCreateRequest, session: SessionDependency):
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
-    return {"message": "User registered successfully"}
+    return UserRegisterResponse(message="User registered successfully")
 
 @router.post("/login")
 def login(

@@ -7,9 +7,9 @@ from contextlib import asynccontextmanager
 import time
 import uuid
 
-from .routers import heroes, missions, auth
-from .db import create_db_and_tables
-from .config import get_settings
+from routers import heroes, missions, auth
+from db import create_db_and_tables
+from config import get_settings
 
 
 # Lifespan function to handle startup and shutdown events
