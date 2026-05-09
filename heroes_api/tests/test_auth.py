@@ -42,6 +42,14 @@ def test_me(client):
     assert response.status_code == 200
     assert response.json()["username"] == "test-user"
 
+def test_me_admin(client):
+    client.post("/auth/register", json={"username": "admin-user", "password": "123456", "is_admin": True})
+    token = client.post("/auth/login", data={"username": "admin-user", "password": "123456"}).json()["access_token"]
+    response = client.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == 200
+    assert response.json()["username"] == "admin-user"
+    assert response.json()["is_admin"] is True
+
 def test_me_no_token(client):
     response = client.get("/auth/me")
     assert response.status_code == 401

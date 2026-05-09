@@ -1,15 +1,9 @@
-# POST /heroes (Authenticated) - Create a new hero
-# GET /heroes (Public) - Get list of all heroes
-# GET /heroes/{hero_id} (Public) - Get hero by ID
-# PATCH /heroes/{hero_id} (Authenticated) - Update part of hero by ID
-# DELETE /heroes/{hero_id} (Admin only) - Delete hero by ID (can't delete hero with active missions)
-
 from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import select
 
-from app.models import Hero, Mission
-from app.dependencies import SessionDependency, get_current_user, get_current_admin
-from app.models.hero_schema import HeroCreateRequest, HeroUpdateRequest, HeroResponse
+from models import Hero, Mission
+from dependencies import SessionDependency, get_current_user, get_current_admin
+from models.hero_schema import HeroCreateRequest, HeroUpdateRequest, HeroResponse
 
 router = APIRouter(prefix="/heroes", tags=["heroes"])
 
@@ -52,6 +46,10 @@ def update_hero(hero_id: int, request: HeroUpdateRequest, session: SessionDepend
         hero.name = request.name
     if request.power is not None:
         hero.power = request.power
+    if request.level is not None:
+        hero.level = request.level
+    if request.active is not None:
+        hero.active = request.active
 
     session.add(hero)
     session.commit()

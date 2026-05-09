@@ -8,10 +8,10 @@ class MissionCreateRequest(BaseModel):
 
 class MissionUpdateRequest(BaseModel):
     """Schema for updating an existing mission."""
-    title: str | None = None
-    difficulty: int | None = None
-    completed: bool | None = None
-    hero_id: int | None = None
+    title: str | None = Field(default=None, min_length=5)
+    difficulty: int | None = Field(default=None, ge=1, le=10)
+    completed: bool | None = Field(default=None)
+    hero_id: int | None = Field(default=None)
 
 class MissionResponse(BaseModel):
     """Schema for mission response."""

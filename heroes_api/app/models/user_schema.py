@@ -16,3 +16,7 @@ class UserResponse(BaseModel):
     id: int
     username: str
     is_admin: bool
+
+class UserRegisterResponse(BaseModel):
+    """Schema for user registration response."""
+    message: str

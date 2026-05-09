@@ -1,19 +1,9 @@
-# CRUD operations for missions with check for hero existence (hero_id) during creation
-# POST /missions (Authenticated) - Create a new mission for a hero
-# GET /missions (Public) - Get list of all missions
-# GET /missions/{mission_id} (Public) - Get mission by ID
-# PATCH /missions/{mission_id} (Authenticated) - Update part of mission by ID
-# DELETE /missions/{mission_id} (Admin only) - Delete mission by ID
-
 from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
-from typing import Annotated
-from sqlmodel import Session, select
+from sqlmodel import select
 
-from app.db import get_session
-from app.models import Mission, Hero
-from app.dependencies import SessionDependency, get_current_user, get_current_admin
-from app.models.mission_schema import MissionCreateRequest, MissionUpdateRequest, MissionResponse
+from models import Mission, Hero
+from dependencies import SessionDependency, get_current_user, get_current_admin
+from models.mission_schema import MissionCreateRequest, MissionUpdateRequest, MissionResponse
 
 router = APIRouter(prefix="/missions", tags=["missions"])
 
@@ -23,6 +13,8 @@ def create_mission(request: MissionCreateRequest, session: SessionDependency, cu
     hero = session.get(Hero, request.hero_id)
     if not hero:
         raise HTTPException(status_code=404, detail="Hero not found.")
+    if not hero.active:
+        raise HTTPException(status_code=400, detail="Cannot assign mission to an inactive hero.")
     
     new_mission = Mission(
         title=request.title,

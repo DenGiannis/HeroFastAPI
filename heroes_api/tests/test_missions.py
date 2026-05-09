@@ -33,6 +33,18 @@ def test_create_mission_invalid_difficulty(client, auth_headers):
     response = create_mission(client, auth_headers, difficulty=100, hero_id=hero["id"])
     assert response.status_code == 422
 
+def test_create_mission_inactive_hero(client, auth_headers):
+    hero = create_hero(client, auth_headers)
+    # Deactivate the hero
+    client.patch(f"/heroes/{hero['id']}", json={"active": False}, headers=auth_headers)
+    response = create_mission(client, auth_headers, hero_id=hero["id"])
+    assert response.status_code == 400
+
+def test_create_mission_short_title(client, auth_headers):
+    hero = create_hero(client, auth_headers)
+    response = create_mission(client, auth_headers, title="AB", hero_id=hero["id"])
+    assert response.status_code == 422
+
 
 # GET ALL MISSIONS TESTS
 def test_get_missions_empty(client):
@@ -93,6 +105,24 @@ def test_update_mission_reassign_invalid_hero(client, auth_headers):
 def test_update_mission_not_found(client, auth_headers):
     response = client.patch("/missions/999", json={"completed": True}, headers=auth_headers)
     assert response.status_code == 404
+
+def test_update_mission_unauthenticated(client, auth_headers):
+    hero = create_hero(client, auth_headers)
+    created = create_mission(client, auth_headers, hero_id=hero["id"]).json()
+    response = client.patch(f"/missions/{created['id']}", json={"completed": True})
+    assert response.status_code == 401
+
+def test_update_mission_invalid_difficulty(client, auth_headers):
+    hero = create_hero(client, auth_headers)
+    created = create_mission(client, auth_headers, hero_id=hero["id"]).json()
+    response = client.patch(f"/missions/{created['id']}", json={"difficulty": 100}, headers=auth_headers)
+    assert response.status_code == 422
+
+def test_update_mission_short_title(client, auth_headers):
+    hero = create_hero(client, auth_headers)
+    created = create_mission(client, auth_headers, hero_id=hero["id"]).json()
+    response = client.patch(f"/missions/{created['id']}", json={"title": "AB"}, headers=auth_headers)
+    assert response.status_code == 422
 
 
 # -DELETE MISSION TESTS

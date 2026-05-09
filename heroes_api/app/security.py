@@ -2,7 +2,7 @@ from jose import jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 
-from .config import get_settings
+from config import get_settings
 
 settings = get_settings()
 

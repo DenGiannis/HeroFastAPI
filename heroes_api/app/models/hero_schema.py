@@ -7,8 +7,10 @@ class HeroCreateRequest(BaseModel):
 
 class HeroUpdateRequest(BaseModel):
     """Schema for updating an existing hero."""
-    name: str | None = None
-    power: str | None = None
+    name: str | None = Field(default=None, min_length=3)
+    power: str | None = Field(default=None, min_length=3)
+    level: int | None = Field(default=None, ge=1, le=100)
+    active: bool | None = Field(default=None)
 
 class HeroResponse(BaseModel):
     """Schema for hero response."""

@@ -16,6 +16,10 @@ def test_create_hero_short_name(client, auth_headers):
     response = client.post("/heroes/", json={"name": "AB", "power": "Programming"}, headers=auth_headers)
     assert response.status_code == 422
 
+def test_create_hero_short_power(client, auth_headers):
+    response = client.post("/heroes/", json={"name": "John Doe", "power": "AB"}, headers=auth_headers)
+    assert response.status_code == 422
+
 
 # GET ALL HEROES TESTS
 def test_get_heroes_empty(client):
@@ -45,11 +49,13 @@ def test_get_hero_not_found(client):
 
 # UPDATE HERO TESTS
 def test_update_hero(client, auth_headers):
-    created = client.post("/heroes/", json={"name": "John Doe", "power": "Programming"}, headers=auth_headers).json()
-    response = client.patch(f"/heroes/{created['id']}", json={"name": "Alice Doe"}, headers=auth_headers)
+    created = client.post("/heroes/", json={"name": "John Doe", "power": "Programming", "level": 1, "active": True}, headers=auth_headers).json()
+    response = client.patch(f"/heroes/{created['id']}", json={"name": "Alice Doe", "level": 2, "active": False}, headers=auth_headers)
     assert response.status_code == 200
     assert response.json()["name"] == "Alice Doe"
     assert response.json()["power"] == "Programming"  # unchanged
+    assert response.json()["level"] == 2
+    assert response.json()["active"] is False
 
 def test_update_hero_unauthenticated(client, auth_headers):
     created = client.post("/heroes/", json={"name": "John Doe", "power": "Programming"}, headers=auth_headers).json()
@@ -59,6 +65,11 @@ def test_update_hero_unauthenticated(client, auth_headers):
 def test_update_hero_not_found(client, auth_headers):
     response = client.patch("/heroes/100", json={"name": "Glitch"}, headers=auth_headers)
     assert response.status_code == 404
+
+def test_update_hero_short_name(client, auth_headers):
+    created = client.post("/heroes/", json={"name": "John Doe", "power": "Programming"}, headers=auth_headers).json()
+    response = client.patch(f"/heroes/{created['id']}", json={"name": "AB"}, headers=auth_headers)
+    assert response.status_code == 422
 
 
 # DELETE HERO TESTS
