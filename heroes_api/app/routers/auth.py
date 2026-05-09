@@ -1,42 +1,33 @@
 # Authentication routes and logic
 # POST /auth/register (Public) - Register a new user
 # POST /auth/login (Public) - Login and return access token and token type
-# GET /auth/me (Authenticated) - Get current user info
+# GET /auth/me (Authenticated) - Get current user info (username and is_admin)
 
 from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
 from typing import Annotated
 from fastapi import status
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlmodel import Session, select
+from sqlmodel import select
 
 from app.security import hash_password, verify_password, create_access_token
-from app.db import get_session
 from app.models import User
 from app.dependencies import SessionDependency, get_current_user
+from app.models.user_schema import UserCreateRequest, UserResponse
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-class RegisterRequest(BaseModel):
-    username: str
-    password: str
-
-class LoginRequest(BaseModel):
-    username: str
-    password: str
-
 @router.post("/register", status_code=201)
-def register(request: RegisterRequest, db: Session = Depends(get_session)):
+def register(request: UserCreateRequest, session: SessionDependency):
     """Register a new user."""
-    user = db.exec(select(User).where(User.username == request.username)).first()
+    user = session.exec(select(User).where(User.username == request.username)).first()
     if user:
         raise HTTPException(status_code=400, detail="Username already exists")
-    
+
     hashed_password = hash_password(request.password)
-    new_user = User(username=request.username, hashed_password=hashed_password)
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    new_user = User(username=request.username, hashed_password=hashed_password, is_admin=request.is_admin)
+    session.add(new_user)
+    session.commit()
+    session.refresh(new_user)
     return {"message": "User registered successfully"}
 
 @router.post("/login")
@@ -59,12 +50,11 @@ def login(
         )
 
     return {
-        "access_token": create_access_token(user.username),
+        "access_token": create_access_token({"sub": user.username}),
         "token_type": "bearer",
     }
 
-@router.get("/me")
-def get_current_user(current_user: User = Depends(get_current_user)):
+@router.get("/me", response_model=UserResponse)
+def get_current_user_info(current_user: User = Depends(get_current_user)):
     """Get current user info."""
     return current_user
-
