@@ -78,23 +78,23 @@
 -->
 
 ### Swagger UI
-![Swagger UI](screenshots/swagger_ui.png)
-![Swagger UI](screenshots/swagger_ui2.png)
+![Swagger UI](heroes_api/screenshots/swagger_ui.png)
+![Swagger UI](heroes_api/screenshots/swagger_ui2.png)
 
 ### JWT Authorization
-![JWT Auth](screenshots/jwt_auth.png)
-![JWT Auth](screenshots/jwt_auth2.png)
+![JWT Auth](heroes_api/screenshots/jwt_auth.png)
+![JWT Auth](heroes_api/screenshots/jwt_auth2.png)
 
 ### Example Request & Response
 #### **200 - Success** 
-![Create Hero](screenshots/create_hero.png)
-![Create Hero](screenshots/create_hero2.png)
+![Create Hero](heroes_api/screenshots/create_hero.png)
+![Create Hero](heroes_api/screenshots/create_hero2.png)
 #### **401 - Unauthorized**
-![Create Hero](screenshots/create_hero401(1).png)
-![Create Hero](screenshots/create_hero401(2).png)
+![Create Hero](heroes_api/screenshots/create_hero401(1).png)
+![Create Hero](heroes_api/screenshots/create_hero401(2).png)
 #### **403 - Forbidden**
-![Delete Hero](screenshots/delete_hero403.png)
+![Delete Hero](heroes_api/screenshots/delete_hero403.png)
 
 ### Tests Passing
-![Pytest Output](screenshots/pytest_output.png)
-![Pytest Output](screenshots/pytest_output2.png)
+![Pytest Output](heroes_api/screenshots/pytest_output.png)
+![Pytest Output](heroes_api/screenshots/pytest_output2.png)
