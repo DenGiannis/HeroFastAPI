@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import select
 
-from models import Hero, Mission
-from dependencies import SessionDependency, get_current_user, get_current_admin
-from models.hero_schema import HeroCreateRequest, HeroUpdateRequest, HeroResponse
+from app.models import Hero, Mission
+from app.dependencies import SessionDependency, get_current_user, get_current_admin
+from app.models.hero_schema import HeroCreateRequest, HeroUpdateRequest, HeroResponse
 
 router = APIRouter(prefix="/heroes", tags=["heroes"])
 
