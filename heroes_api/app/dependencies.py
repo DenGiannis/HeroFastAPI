@@ -32,3 +32,9 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], session: Ses
     if user is None:
         raise cred_exception
     return user
+
+def get_current_admin(current_user: Annotated[User, Depends(get_current_user)]) -> User:
+    """Check if the user is admin and return or raise 403."""
+    if not current_user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+    return current_user
